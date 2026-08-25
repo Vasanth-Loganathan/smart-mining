@@ -26,29 +26,25 @@ def run():
     sensor = net.addDocker(
         'sensor',
         dimage='smart-mining-sensor',
-        ip='10.0.1.10/24',
-        cmd='python sensor_simulator.py'
+        ip='10.0.1.10/24'
     )
 
     edge = net.addDocker(
         'edge',
         dimage='smart-mining-edge',
-        ip='10.0.1.20/24',
-        cmd='python app.py'
+        ip='10.0.1.20/24'
     )
 
     fog = net.addDocker(
         'fog',
         dimage='smart-mining-fog',
-        ip='10.0.2.30/24',
-        cmd='python app.py'
+        ip='10.0.2.30/24'
     )
 
     cloud = net.addDocker(
         'cloud',
         dimage='smart-mining-cloud',
-        ip='10.0.3.40/24',
-        cmd='python app.py'
+        ip='10.0.3.40/24'
     )
 
     # =====================================================
@@ -195,6 +191,54 @@ def run():
         'via 10.0.3.30 '
         'dev cloud-eth0'
     )
+
+    # =====================================================
+    # START EDGE APPLICATION
+    # =====================================================
+
+    edge.cmd(
+        'cd /app && '
+        'nohup python3 app.py '
+        '> /tmp/edge.log 2>&1 &'
+    )
+
+    # =====================================================
+    # START FOG APPLICATION
+    # =====================================================
+
+    fog.cmd(
+        'cd /app && '
+        'nohup python3 app.py '
+        '> /tmp/fog.log 2>&1 &'
+    )
+
+    # =====================================================
+    # START CLOUD APPLICATION
+    # =====================================================
+
+    cloud.cmd(
+        'cd /app && '
+        'nohup python3 app.py '
+        '> /tmp/cloud.log 2>&1 &'
+    )
+
+    # =====================================================
+    # START SENSOR SIMULATOR
+    # =====================================================
+
+    sensor.cmd(
+        'cd /app && '
+        'nohup python3 sensor_simulator.py '
+        '> /tmp/sensor.log 2>&1 &'
+    )
+
+    # =====================================================
+    # WAIT FOR APPLICATIONS TO START
+    # =====================================================
+
+    import time
+
+    time.sleep(2)
 
     # =====================================================
     # INFORMATION
